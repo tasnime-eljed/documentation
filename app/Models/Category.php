@@ -8,34 +8,37 @@ class Category extends Model
 {
     protected $fillable = [
         'nom',
-        'projectId',
+        'project_id',
     ];
+
+    // ============================
+    // Relations
+    // ============================
 
     public function project()
     {
-        return $this->belongsTo(Project::class, 'projectId');
+        return $this->belongsTo(Project::class);
+        // belongsTo: relation plusieurs a un
+        // une categorie appartient a un projet
+        // un projet peut avoir plusieurs categories
     }
 
     public function documentations()
     {
-        return $this->hasMany(Documentation::class, 'categoryId');
+        return $this->hasMany(Documentation::class);
+        // hasMany: relation un a plusieurs
+        // une categorie peut avoir plusieurs documentations
+        // une documentation appartient a une categorie
     }
-
-    public function ajouterDocumentation(array $data)
-    {
-        $data['categoryId'] = $this->id;
-        return Documentation::create($data);
-    }
-
-    public function modifierDocumentation($id, array $data)
-    {
-        $documentation = $this->documentations()->findOrFail($id);
-        $documentation->update($data);
-        return $documentation;
-    }
-
-    public function supprimerDocumentation($id)
-    {
-        return $this->documentations()->where('id', $id)->delete();
-    }
+      public function favoritedBy()
+{
+    return $this->morphToMany(User::class, 'favoritable', 'favorites', 'favoritable_id', 'user_id');
+}
+    // favoritedBy: users qui ont mis ce projet en favori
+    // morphToMany: relation polymorphique plusieurs a plusieurs
+    // User::class: le modèle lié
+    // 'favoritable': nom de la relation polymorphique
+    // 'favorites': nom de la table pivot
+    // 'favoritable_id': clé étrangère de l'entité favoritable dans la table pivot
+    // 'user_id': clé étrangère de User dans la table pivot
 }

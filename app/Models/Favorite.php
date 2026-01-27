@@ -6,35 +6,66 @@ use Illuminate\Database\Eloquent\Model;
 
 class Favorite extends Model
 {
-    protected $table = 'favoris';
+    //Définit explicitement le nom de la table pivot en base de données
+    protected $table = 'favorites';
 
+    // Colonnes autorisées pour create / update
     protected $fillable = [
-        'userId',
-        'docId',
+        'user_id',
+        'favoritable_id',
+        'favoritable_type',
     ];
 
+    // ============================
+    // Relations polymorphiques
+    // ============================
+
+    /**
+     * L'utilisateur qui a ajouté ce favori
+     */
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class);
+        // belongsTo: relation plusieurs a un
+        // un favori appartient a un user
+        // un user peut avoir plusieurs favoris
     }
 
-    public function documentation()
+    /**
+     * L'objet favori (Project, Category, Documentation)
+     */
+    public function favoritable()
     {
-        return $this->belongsTo(Documentation::class, 'docId');
+        return $this->morphTo();
+        // morphTo: relation polymorphique inverse
+
     }
 
-    public static function ajouterAuxFavoris($userId, $docId)
+    // ============================
+    // Méthodes pratiques
+    // ============================
+
+    /**
+     * Ajouter un favori
+     */
+    public static function ajouterAuxFavoris($user_id, Model $objet)
     {
-        return self::firstOrCreate([
-            'userId' => $userId,
-            'docId' => $docId,
+        return self::firstOrCreate([//self: fait référence a la classe courante Favorite
+        // firstOrCreate: cherche un enregistrement correspondant aux attributs, sinon le crée
+            'user_id' => $user_id,
+            'favoritable_id' => $objet->id,
+            'favoritable_type' => get_class($objet),
         ]);
     }
 
-    public static function retirerFavori($userId, $docId)
+    /**
+     * Retirer un favori
+     */
+    public static function retirerFavori($user_id, Model $objet)
     {
-        return self::where('userId', $userId)
-                   ->where('docId', $docId)
+        return self::where('user_id', $user_id)
+                   ->where('favoritable_id', $objet->id)
+                   ->where('favoritable_type', get_class($objet))
                    ->delete();
     }
 }

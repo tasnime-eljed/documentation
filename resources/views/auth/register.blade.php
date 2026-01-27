@@ -1,132 +1,183 @@
-@extends('components.layout')
+@extends('layouts.guest')
 
 @section('title', 'Inscription - DevDocs')
 
 @section('styles')
 <style>
-    .content {
-        padding: 0 !important;
-        margin: 0 !important;
-        max-width: 100% !important;
+    :root {
+        --primary-dark: #5D4E37;
+        --primary: #8B7355;
+        --primary-light: #A0826D;
+        --secondary: #D4A574;
+        --accent: #B8956A;
+        --background: #FAF8F5;
+        --text-dark: #2D3748;
+        --text-light: #718096;
     }
 
     .auth-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: calc(100vh - 70px);
-        padding: 20px;
+        min-height: 100vh;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, rgba(139, 115, 85, 0.03) 0%, rgba(184, 149, 106, 0.05) 100%);
     }
 
     .auth-card {
         background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(93, 78, 55, 0.15);
         overflow: hidden;
-        max-width: 1000px;
+        max-width: 1100px;
         width: 100%;
-        display: flex;
-        animation: fadeIn 0.5s ease;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .auth-form-section {
-        flex: 1;
-        padding: 60px 50px;
+        padding: 50px 50px;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
 
-    .auth-logo {
+    .auth-header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
     }
 
-    .auth-logo-icon {
+    .auth-logo {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #E2866B 0%, #C9757F 100%);
-        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: 20px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-size: 40px;
-        animation: fadeInDown 0.8s ease;
+        margin-bottom: 20px;
+        animation: bounceIn 0.8s ease;
+        box-shadow: 0 8px 24px rgba(139, 115, 85, 0.3);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
     }
 
     .auth-title {
-        color: #1C4D3D;
-        margin-bottom: 10px;
+        color: var(--primary-dark);
         font-size: 32px;
-        font-weight: 700;
-        text-align: center;
-        animation: fadeInLeft 0.8s ease;
+        font-weight: 800;
+        margin-bottom: 10px;
+        animation: fadeInDown 0.8s ease 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .auth-subtitle {
-        color: #718096;
-        margin-bottom: 30px;
+        color: var(--text-light);
         font-size: 16px;
-        text-align: center;
-        animation: fadeInLeft 0.8s ease 0.1s both;
+        animation: fadeInUp 0.8s ease 0.3s both;
     }
 
     .form-group {
         margin-bottom: 20px;
-        animation: fadeInUp 0.8s ease;
-        position: relative;
+        animation: fadeInUp 0.8s ease both;
     }
+
+    .form-group:nth-child(1) { animation-delay: 0.4s; }
+    .form-group:nth-child(2) { animation-delay: 0.45s; }
+    .form-group:nth-child(3) { animation-delay: 0.5s; }
+    .form-group:nth-child(4) { animation-delay: 0.55s; }
 
     .form-label {
         display: block;
         margin-bottom: 8px;
-        color: #4a5568;
-        font-weight: 600;
+        color: var(--text-dark);
+        font-weight: 700;
         font-size: 14px;
     }
 
     .input-wrapper {
         position: relative;
-        display: flex;
-        align-items: center;
     }
 
     .input-icon {
         position: absolute;
         left: 18px;
-        color: #a0aec0;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-light);
         width: 20px;
         height: 20px;
         pointer-events: none;
+        transition: all 0.3s ease;
     }
 
     .form-input {
         width: 100%;
         padding: 14px 18px 14px 50px;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
+        border: 2px solid #E2E8F0;
+        border-radius: 12px;
         font-size: 15px;
-        transition: all 0.3s ease;
-        background: #f7fafc;
         font-family: inherit;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        background: var(--background);
     }
 
     .form-input::placeholder {
-        color: #a0aec0;
+        color: #A0AEC0;
     }
 
     .form-input:focus {
         outline: none;
-        border-color: #C9757F;
+        border-color: var(--primary);
         background: white;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(201, 117, 127, 0.2);
+        box-shadow: 0 8px 20px rgba(139, 115, 85, 0.15);
+    }
+
+    .form-input:focus ~ .input-icon {
+        color: var(--primary);
+        transform: translateY(-50%) scale(1.1);
     }
 
     .password-strength {
         margin-top: 8px;
         height: 4px;
-        background: #e2e8f0;
+        background: #E2E8F0;
         border-radius: 2px;
         overflow: hidden;
         display: none;
@@ -141,17 +192,17 @@
 
     .strength-weak {
         width: 33%;
-        background: #f56565;
+        background: #F56565;
     }
 
     .strength-medium {
         width: 66%;
-        background: #ed8936;
+        background: #ED8936;
     }
 
     .strength-strong {
         width: 100%;
-        background: #48bb78;
+        background: var(--accent);
     }
 
     .terms-checkbox {
@@ -159,23 +210,33 @@
         align-items: flex-start;
         gap: 10px;
         margin-bottom: 20px;
-        font-size: 14px;
-        color: #4a5568;
+        font-size: 13px;
+        color: var(--text-dark);
+        animation: fadeIn 0.8s ease 0.6s both;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     .terms-checkbox input[type="checkbox"] {
         width: 18px;
         height: 18px;
         cursor: pointer;
-        accent-color: #C9757F;
+        accent-color: var(--primary);
         margin-top: 2px;
         flex-shrink: 0;
     }
 
-    .terms-checkbox a {
-        color: #C9757F;
-        text-decoration: none;
+    .terms-checkbox label {
         font-weight: 600;
+    }
+
+    .terms-checkbox a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 700;
     }
 
     .terms-checkbox a:hover {
@@ -184,21 +245,42 @@
 
     .btn-primary {
         width: 100%;
-        padding: 15px;
+        padding: 16px;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         font-size: 16px;
-        font-weight: 700;
+        font-weight: 800;
         cursor: pointer;
-        transition: all 0.3s ease;
-        background: linear-gradient(135deg, #1C4D3D 0%, #0C0C0C 100%);
-        color: #FEFEFA;
-        animation: fadeInUp 0.8s ease 0.3s both;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        color: white;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        animation: fadeInUp 0.8s ease 0.65s both;
+        box-shadow: 0 6px 20px rgba(139, 115, 85, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .btn-primary:hover::before {
+        width: 400px;
+        height: 400px;
     }
 
     .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(28, 77, 61, 0.4);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(139, 115, 85, 0.4);
     }
 
     .btn-primary:disabled {
@@ -211,7 +293,7 @@
         text-align: center;
         margin: 25px 0;
         position: relative;
-        animation: fadeIn 0.8s ease 0.4s both;
+        animation: fadeIn 0.8s ease 0.7s both;
     }
 
     .divider::before {
@@ -221,195 +303,70 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: #e2e8f0;
+        background: #E2E8F0;
     }
 
     .divider span {
         background: white;
-        padding: 0 15px;
-        color: #a0aec0;
+        padding: 0 16px;
+        color: var(--text-light);
         position: relative;
-        z-index: 1;
         font-size: 14px;
-    }
-
-    .social-buttons {
-        display: flex;
-        gap: 15px;
-        animation: fadeInUp 0.8s ease 0.5s both;
-    }
-
-    .btn-social {
-        flex: 1;
-        padding: 12px;
-        border: 2px solid #e2e8f0;
-        background: white;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        text-decoration: none;
-        color: #4a5568;
-        font-size: 14px;
-    }
-
-    .btn-social:hover {
-        border-color: #C9757F;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        font-weight: 700;
     }
 
     .toggle-auth {
         text-align: center;
-        margin-top: 25px;
-        color: #718096;
-        animation: fadeIn 0.8s ease 0.6s both;
-        font-size: 14px;
+        margin-top: 20px;
+        color: var(--text-light);
+        animation: fadeIn 0.8s ease 0.75s both;
+        font-weight: 600;
     }
 
     .toggle-auth a {
-        color: #C9757F;
+        color: var(--primary);
         text-decoration: none;
-        font-weight: 700;
+        font-weight: 800;
+        transition: all 0.3s ease;
     }
 
     .toggle-auth a:hover {
+        color: var(--primary-dark);
         text-decoration: underline;
     }
 
     .auth-illustration {
-        flex: 1;
-        background: linear-gradient(135deg, #1C4D3D 0%, #0C0C0C 100%);
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--accent) 100%);
+        padding: 60px 40px;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 40px;
         position: relative;
         overflow: hidden;
     }
 
-    .auth-illustration::before {
-        content: '';
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        background: rgba(254, 254, 250, 0.1);
-        border-radius: 50%;
-        top: -100px;
-        right: -100px;
-        animation: float 6s ease-in-out infinite;
-    }
-
+    .auth-illustration::before,
     .auth-illustration::after {
         content: '';
         position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .auth-illustration::before {
+        width: 300px;
+        height: 300px;
+        top: -100px;
+        right: -100px;
+    }
+
+    .auth-illustration::after {
         width: 200px;
         height: 200px;
-        background: rgba(254, 254, 250, 0.1);
-        border-radius: 50%;
         bottom: -50px;
         left: -50px;
-        animation: float 8s ease-in-out infinite;
-    }
-
-    .illustration-content {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        color: #FEFEFA;
-    }
-
-    .illustration-icon {
-        font-size: 80px;
-        margin-bottom: 20px;
-        animation: bookFloat 3s ease-in-out infinite, fadeInRight 0.8s ease;
-        display: inline-block;
-    }
-
-    .illustration-content h3 {
-        font-size: 36px;
-        margin-bottom: 20px;
-        font-weight: 700;
-        animation: slideInFromRight 1s ease 0.1s both;
-    }
-
-    .illustration-content p {
-        font-size: 16px;
-        opacity: 0.9;
-        line-height: 1.6;
-        animation: fadeInRight 0.8s ease 0.2s both;
-    }
-
-    .error-message {
-        background: #fee;
-        color: #c00;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-        animation: shake 0.5s ease;
-    }
-
-    .success-message {
-        background: #d4edda;
-        color: #155724;
-        padding: 12px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes fadeInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes fadeInRight {
-        from {
-            opacity: 0;
-            transform: translateX(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        animation-delay: 2s;
     }
 
     @keyframes float {
@@ -417,7 +374,21 @@
         50% { transform: translateY(-20px); }
     }
 
-    @keyframes bookFloat {
+    .illustration-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        color: white;
+    }
+
+    .illustration-icon {
+        font-size: 100px;
+        margin-bottom: 30px;
+        animation: floatIcon 4s ease-in-out infinite;
+        display: inline-block;
+    }
+
+    @keyframes floatIcon {
         0%, 100% {
             transform: translateY(0) rotate(0deg);
         }
@@ -432,15 +403,41 @@
         }
     }
 
-    @keyframes slideInFromRight {
-        0% {
+    .illustration-content h3 {
+        font-size: 38px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        animation: fadeInRight 1s ease 0.3s both;
+    }
+
+    @keyframes fadeInRight {
+        from {
             opacity: 0;
-            transform: translateX(50px);
+            transform: translateX(30px);
         }
-        100% {
+        to {
             opacity: 1;
             transform: translateX(0);
         }
+    }
+
+    .illustration-content p {
+        font-size: 17px;
+        opacity: 0.95;
+        line-height: 1.7;
+        animation: fadeInRight 1s ease 0.5s both;
+    }
+
+    .alert-error {
+        background: #FED7D7;
+        color: #742A2A;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        border-left: 4px solid #F56565;
+        animation: shake 0.5s ease;
     }
 
     @keyframes shake {
@@ -449,13 +446,14 @@
         75% { transform: translateX(10px); }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 968px) {
         .auth-card {
-            flex-direction: column;
+            grid-template-columns: 1fr;
         }
 
         .auth-illustration {
-            min-height: 200px;
+            min-height: 250px;
+            order: -1;
         }
 
         .auth-form-section {
@@ -467,11 +465,7 @@
         }
 
         .illustration-content h3 {
-            font-size: 28px;
-        }
-
-        .social-buttons {
-            flex-direction: column;
+            font-size: 32px;
         }
     }
 </style>
@@ -481,15 +475,14 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-form-section">
-            <div class="auth-logo">
-                <div class="auth-logo-icon">📚</div>
+            <div class="auth-header">
+                <div class="auth-logo">📚</div>
+                <h2 class="auth-title">Inscription</h2>
+                <p class="auth-subtitle">Créez votre compte pour commencer</p>
             </div>
 
-            <h2 class="auth-title">Inscription</h2>
-            <p class="auth-subtitle">Créez votre compte pour commencer</p>
-
             @if ($errors->any())
-                <div class="error-message">
+                <div class="alert-error">
                     <ul style="margin: 0; padding-left: 20px;">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -498,42 +491,32 @@
                 </div>
             @endif
 
-            @if (session('success'))
-                <div class="success-message">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('register') }}" id="registerForm">
+            <form method="POST" action="{{ route('register.post') }}" id="registerForm">
                 @csrf
 
                 <div class="form-group">
-                    <label class="form-label" for="name">Nom complet</label>
+                    <label class="form-label" for="nom">Nom complet</label>
                     <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="nom"
+                            name="nom"
+                            class="form-input"
+                            placeholder="Votre nom complet"
+                            value="{{ old('nom') }}"
+                            required
+                            autofocus
+                        >
                         <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            class="form-input"
-                            placeholder="Votre nom complet"
-                            value="{{ old('name') }}"
-                            required
-                            autofocus
-                        >
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="email">Email</label>
+                    <label class="form-label" for="email">Adresse email</label>
                     <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
                         <input
                             type="email"
                             id="email"
@@ -543,16 +526,16 @@
                             value="{{ old('email') }}"
                             required
                         >
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="password">Mot de passe</label>
                     <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
                         <input
                             type="password"
                             id="password"
@@ -562,6 +545,10 @@
                             required
                             minlength="8"
                         >
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
                     </div>
                     <div class="password-strength" id="passwordStrength">
                         <div class="password-strength-bar" id="strengthBar"></div>
@@ -571,10 +558,6 @@
                 <div class="form-group">
                     <label class="form-label" for="password_confirmation">Confirmer le mot de passe</label>
                     <div class="input-wrapper">
-                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            <path d="M9 12l2 2 4-4"></path>
-                        </svg>
                         <input
                             type="password"
                             id="password_confirmation"
@@ -584,6 +567,10 @@
                             required
                             minlength="8"
                         >
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
                     </div>
                 </div>
 
@@ -595,7 +582,7 @@
                 </div>
 
                 <button type="submit" class="btn-primary">
-                    S'inscrire
+                    Créer mon compte
                 </button>
             </form>
 
@@ -603,26 +590,8 @@
                 <span>OU</span>
             </div>
 
-            <div class="social-buttons">
-                <a href="#" class="btn-social">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#4285F4" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#34A853" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    S'inscrire avec Google
-                </a>
-                <a href="#" class="btn-social">
-                    <svg width="20" height="20" viewBox="0 0 24 24">
-                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    S'inscrire avec Facebook
-                </a>
-            </div>
-
             <div class="toggle-auth">
-                Déjà inscrit? <a href="{{ route('login') }}">Se connecter</a>
+                Déjà inscrit ? <a href="{{ route('login') }}">Se connecter</a>
             </div>
         </div>
 
@@ -676,7 +645,7 @@
     form.addEventListener('submit', function(e) {
         if (passwordInput.value !== confirmPassword.value) {
             e.preventDefault();
-            alert('Les mots de passe ne correspondent pas!');
+            alert('Les mots de passe ne correspondent pas !');
             confirmPassword.focus();
         }
     });

@@ -10,38 +10,42 @@ class Project extends Model
         'nom',
         'description',
         'date_creation',
-        'userId',
+        'user_id',
     ];
 
     protected $casts = [
         'date_creation' => 'datetime',
     ];
 
+    // ============================
+    // Relations
+    // ============================
+
     public function user()
     {
-        return $this->belongsTo(User::class, 'userId');
+        return $this->belongsTo(User::class);
+        // belongsTo: relation plusieurs a un
+        // un projet appartient a un user
+        //un user peut avoir plusieurs projets
     }
 
     public function categories()
     {
-        return $this->hasMany(Category::class, 'projectId');
+        return $this->hasMany(Category::class);
+        // hasMany: relation un a plusieurs
+        // un projet peut avoir plusieurs categories
+        // une categorie appartient a un projet
     }
 
-    public function ajouterCategorie(array $data)
-    {
-        $data['projectId'] = $this->id;
-        return Category::create($data);
-    }
-
-    public function modifierCategorie($id, array $data)
-    {
-        $category = $this->categories()->findOrFail($id);
-        $category->update($data);
-        return $category;
-    }
-
-    public function supprimerCategorie($id)
-    {
-        return $this->categories()->where('id', $id)->delete();
-    }
+    public function favoritedBy()
+{
+    return $this->morphToMany(User::class, 'favoritable', 'favorites', 'favoritable_id', 'user_id');
+}
+    // favoritedBy: users qui ont mis ce projet en favori
+    // morphToMany: relation polymorphique plusieurs a plusieurs
+    // User::class: le modèle lié
+    // 'favoritable': nom de la relation polymorphique
+    // 'favorites': nom de la table pivot
+    // 'favoritable_id': clé étrangère de l'entité favoritable dans la table pivot
+    // 'user_id': clé étrangère de User dans la table pivot
 }

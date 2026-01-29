@@ -1,17 +1,18 @@
 @props(['items' => []])
 
-<nav class="mb-4 text-sm text-gray-600">
-    <ol class="flex gap-2">
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
         @foreach($items as $item)
             @if(!$loop->last)
-                <li>
-                    <a href="{{ $item['url'] }}" class="text-blue-600 hover:underline">
+                {{-- Élément cliquable --}}
+                <li class="breadcrumb-item">
+                    <a href="{{ $item['url'] }}" class="text-decoration-none text-primary">
                         {{ $item['label'] }}
                     </a>
-                    <span>/</span>
                 </li>
             @else
-                <li class="font-semibold text-gray-800">
+                {{-- Élément courant (Actif) --}}
+                <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">
                     {{ $item['label'] }}
                 </li>
             @endif

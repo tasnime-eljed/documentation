@@ -114,7 +114,7 @@ class AuthController extends Controller
             //admin.dashboard : route vers le tableau de bord admin
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->route('reader.dashboard');
         //dashboard : route vers le tableau de bord utilisateur standard
     }
 

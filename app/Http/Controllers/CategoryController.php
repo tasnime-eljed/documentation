@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Project;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -13,7 +14,7 @@ class CategoryController extends Controller
     public function index()
     // Afficher une liste paginée des catégories
     {
-        $categories = Category::latest()->paginate(15);
+        $categories = Category::with('project')->latest()->paginate(15);
         //Category::latest() récupère les catégories triées par date de création décroissante.
         // Retourner la vue avec les catégories paginées
         return view('categories.index', compact('categories'));
@@ -43,7 +44,8 @@ class CategoryController extends Controller
     {
         $this->authorizeAdmin();
         // Vérifie si l'utilisateur est admin
-        return view('categories.create');
+        $projects = Project::all();
+        return view('categories.create', compact('projects'));
         //'categories.create' fait référence à la vue située dans resources/views/categories/create.blade.php.
     }
 
@@ -62,7 +64,7 @@ class CategoryController extends Controller
 
         Category::create($data);
         // Crée une nouvelle catégorie avec les données validées
-        return redirect()->route('categories.index')
+        return redirect()->route('admin.categories.index')
         // Redirige vers la liste des catégories
                          ->with('success', 'Catégorie créée avec succès');
     }
@@ -73,7 +75,9 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         $this->authorizeAdmin();
-        return view('categories.edit', compact('category'));
+        $projects = Project::all();
+        return view('categories.edit', compact('category','projects'));
+
     }
 
     /**
@@ -90,7 +94,7 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        return redirect()->route('categories.show', $category)
+        return redirect()->route('admin.categories.show', $category)
         // Redirige vers la page de la catégorie modifiée
                          ->with('success', 'Catégorie modifiée');
     }
@@ -104,7 +108,7 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return redirect()->route('categories.index')
+        return redirect()->route('admin.categories.index')
                          ->with('success', 'Catégorie supprimée');
     }
 

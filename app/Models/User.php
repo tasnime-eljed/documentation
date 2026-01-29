@@ -89,17 +89,10 @@ class User extends Authenticatable
     // ============================
 
     // Favorites polymorphique (Projects, Categories, Documentations)
-   public function favorites()
-{
-    return $this->morphToMany(
-        'App\Models\Favoritable', // polymorphique, juste pour type hint
-        'favoritable',// nom de la relation polymorphique
-        'favorites',// nom de la table pivot
-        'user_id',// clé étrangère de User dans la table pivot
-        'favoritable_id'// clé étrangère de l'entité favoritable dans la table pivot
-
-    );
-}
+ public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
 
     // Example relations si tu veux
     public function projects()

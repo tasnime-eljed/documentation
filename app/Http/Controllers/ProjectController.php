@@ -81,7 +81,7 @@ class ProjectController extends Controller
         // assigne l'ID de l'utilisateur connecté au projet
         Project::create($data);
         // crée un nouveau projet avec les données validées
-        return redirect()->route('projects.index')
+        return redirect()->route('admin.projects.index')
         // redirige vers la liste des projets
                          ->with('success', 'Projet créé avec succès');
                          // ajoute un message de succès à la session
@@ -117,7 +117,7 @@ class ProjectController extends Controller
 
         $project->update($data);
 
-        return redirect()->route('projects.show', $project)
+        return redirect()->route('admin.projects.show', $project)
         // redirige vers la page du projet modifié
                          ->with('success', 'Projet modifié');
     }
@@ -134,7 +134,7 @@ class ProjectController extends Controller
 
         $project->delete();
 
-        return redirect()->route('projects.index')
+        return redirect()->route('admin.projects.index')
         // redirige vers la liste des projets
                          ->with('success', 'Projet supprimé');
     }

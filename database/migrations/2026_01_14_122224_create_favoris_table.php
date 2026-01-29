@@ -12,18 +12,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('favoris', function (Blueprint $table) {
+        Schema::create('favorites', function (Blueprint $table) {
             $table->id(); // ID auto-incrémenté
             $table->foreignId('user_id') // ID de l'utilisateur
                   ->constrained('users') // clé étrangère vers table 'users'
                   ->onDelete('cascade'); // suppression en cascade si l'utilisateur est supprimé
-            $table->foreignId('documentation_id') // ID de la documentation
-                  ->constrained('documentations') // clé étrangère vers table 'documentations'
-                  ->onDelete('cascade'); // suppression en cascade si la doc est supprimée
-            $table->timestamps(); // created_at et updated_at
+              // pour pouvoir liker des Projets OU des Docs
+            $table->morphs('favoritable');
 
-            // Contrainte unique pour empêcher un utilisateur de mettre le même document en favoris plusieurs fois
-            $table->unique(['user_id', 'documentation_id']);
+            $table->timestamps();
+
+            // Empêcher les doublons (un user ne peut pas liker 2 fois le même objet)
+            $table->unique(['user_id', 'favoritable_id', 'favoritable_type']);
 
             // Index pour améliorer les performances des requêtes fréquentes
             $table->index('user_id'); // rapide pour chercher tous les favoris d'un utilisateur

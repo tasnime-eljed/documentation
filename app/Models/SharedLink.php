@@ -42,9 +42,9 @@ class SharedLink extends Model
      */
     public function genererLien(): string
     {
-        return url('/shared/documentation/' . $this->token);
+        return url('/shared/' . $this->token);
         // url: génère une URL complète
-        // '/shared/documentation/': chemin de base pour les liens partagés
+        // '/shared/': chemin de base pour les liens partagés
         //ajoute le token unique à l'URL de base
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documentation;
+use App\Models\Category; // Indispensable pour le menu déroulant
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,12 +17,8 @@ class DocumentationController extends Controller
         $documentations = Documentation::with(['category.project', 'user'])
                                        ->latest()
                                        ->paginate(12);
-    // Récupère les documentations avec leurs relations 'category.project' et 'user'
-    //  triées par date de création décroissante
-    //  paginées par 12 par page.
 
         return view('documentations.index', compact('documentations'));
-        //'documentations.index' fait référence à la vue située dans resources/views/documentations/index.blade.php.
     }
 
     /**
@@ -31,7 +28,6 @@ class DocumentationController extends Controller
     {
         // Charger les relations
         $documentation->load('category.project', 'user', 'sharedLinks');
-        // 'category.project', 'user', 'sharedLinks' sont chargés pour éviter les requêtes supplémentaires dans la vue.
 
         // Incrémenter le nombre de vues
         $documentation->incrementerVues();
@@ -39,16 +35,13 @@ class DocumentationController extends Controller
         // Vérifier si l'utilisateur a ajouté aux favoris
         $isFavorite = false;
         if (Auth::check()) {
-            //  verifier si L'utilisateur est authentifié
-            $isFavorite = Auth::user()->favorites()//recupère les favoris de l'utilisateur
+            $isFavorite = Auth::user()->favorites()
                                      ->where('favoritable_id', $documentation->id)
                                      ->where('favoritable_type', Documentation::class)
-                                     ->exists();// Vérifie si la documentation est dans les favoris
+                                     ->exists();
         }
 
         return view('documentations.show', compact('documentation', 'isFavorite'));
-        //'documentations.show' fait référence à la vue située dans resources/views/documentations/show.blade.php.
-        // La variable $isFavorite indique si la documentation est dans les favoris de l'utilisateur.
     }
 
     /**
@@ -57,8 +50,11 @@ class DocumentationController extends Controller
     public function create()
     {
         $this->authorizeAdmin();
-        return view('documentations.create');
-        //'documentations.create' fait référence à la vue située dans resources/views/documentations/create.blade.php.
+
+        // CORRECTION : On récupère les catégories pour le menu déroulant
+        $categories = Category::with('project')->get();
+
+        return view('documentations.create', compact('categories'));
     }
 
     /**
@@ -69,16 +65,22 @@ class DocumentationController extends Controller
         $this->authorizeAdmin();
 
         $data = $request->validate([
-            'titre' => 'required|string|max:255',
-            'contenu' => 'required|string',
+            'titre' => 'required|string|max:255', // 'titre' et pas 'title'
+            'contenu' => 'required|string',       // 'contenu' et pas 'content'
             'category_id' => 'required|exists:categories,id',
         ]);
 
         $data['user_id'] = auth()->id();
+
+        // Calcul automatique du temps de lecture (optionnel mais sympa)
+        $words = str_word_count(strip_tags($data['contenu']));
+        $minutes = ceil($words / 200);
+        $data['temps_lecture'] = $minutes > 0 ? $minutes : 1;
+
         Documentation::create($data);
 
-        return redirect()->route('documentations.index')
-        // Redirige vers la liste des documentations
+        // CORRECTION ROUTE : admin.documentations.index
+        return redirect()->route('admin.documentations.index')
                          ->with('success', 'Documentation créée avec succès');
     }
 
@@ -88,7 +90,11 @@ class DocumentationController extends Controller
     public function edit(Documentation $documentation)
     {
         $this->authorizeAdmin();
-        return view('documentations.edit', compact('documentation'));
+
+        // CORRECTION : On récupère les catégories pour le menu déroulant
+        $categories = Category::with('project')->get();
+
+        return view('documentations.edit', compact('documentation', 'categories'));
     }
 
     /**
@@ -104,9 +110,15 @@ class DocumentationController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
 
+        // Recalcul du temps de lecture en cas de modification
+        $words = str_word_count(strip_tags($data['contenu']));
+        $minutes = ceil($words / 200);
+        $data['temps_lecture'] = $minutes > 0 ? $minutes : 1;
+
         $documentation->update($data);
 
-        return redirect()->route('documentations.show', $documentation)
+        // CORRECTION ROUTE : admin.documentations.show
+        return redirect()->route('admin.documentations.show', $documentation)
                          ->with('success', 'Documentation modifiée');
     }
 
@@ -119,20 +131,24 @@ class DocumentationController extends Controller
 
         $documentation->delete();
 
-        return redirect()->route('documentations.index')
+        // CORRECTION ROUTE : admin.documentations.index
+        return redirect()->route('admin.documentations.index')
                          ->with('success', 'Documentation supprimée');
     }
 
     /**
-     * Ajouter ou retirer des favoris
+     * Ajouter ou retirer des favoris (Méthode Toggle)
+     * Note: Dans notre système final, on utilise souvent FavoriteController,
+     * mais on peut garder ça si tu as des routes spécifiques.
      */
     public function toggleFavorite(Documentation $documentation)
     {
         $user = auth()->user();
-        $user->favorites()->toggle($documentation);
-        //toggle(): ajoute la documentation aux favoris si elle n'y est pas,
-        // ou la retire si elle y est déjà.
-        return redirect()->back()->with('success', 'Favoris mis à jour');
+        // Attention : ta relation dans User est un hasMany vers Favorite, pas un morphToMany direct.
+        // Cette méthode toggle() native de Laravel ne marchera pas directement sur hasMany.
+        // Il vaut mieux utiliser les routes favoris.ajouter / favoris.retirer du FavoriteController.
+
+        return redirect()->back()->with('error', 'Utilisez les boutons favoris dédiés.');
     }
 
     /**

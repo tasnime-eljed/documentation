@@ -1,10 +1,11 @@
-@extends('admin.app')
+@extends('layouts.app') {{-- CORRECTION ICI --}}
 
 @section('title', 'Dashboard Admin - DevDocs')
-@section('page-title', 'Dashboard')
+@section('page-title', 'Tableau de Bord')
 
 @section('styles')
 <style>
+    /* Ton CSS personnalisé conservé intact pour le design */
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -59,21 +60,25 @@
     .stat-icon.users {
         background: linear-gradient(135deg, #97B58C 0%, #7FA97F 100%);
         box-shadow: 0 6px 20px rgba(151, 181, 140, 0.3);
+        color: white;
     }
 
     .stat-icon.projects {
         background: linear-gradient(135deg, #B8A58C 0%, #8B7355 100%);
         box-shadow: 0 6px 20px rgba(184, 165, 140, 0.3);
+        color: white;
     }
 
     .stat-icon.categories {
         background: linear-gradient(135deg, #4A7C4E 0%, #2C5F2D 100%);
         box-shadow: 0 6px 20px rgba(74, 124, 78, 0.3);
+        color: white;
     }
 
     .stat-icon.docs {
         background: linear-gradient(135deg, #D4C5B0 0%, #B8A58C 100%);
         box-shadow: 0 6px 20px rgba(212, 197, 176, 0.3);
+        color: white;
     }
 
     .stat-card:hover .stat-icon {
@@ -187,10 +192,12 @@
     .action-btn:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 25px rgba(74, 124, 78, 0.35);
+        color: white;
     }
 
     .recent-activity {
         list-style: none;
+        padding-left: 0;
     }
 
     .activity-item {
@@ -274,6 +281,8 @@
 @endsection
 
 @section('content')
+<div class="container-fluid">
+
     <!-- Statistiques -->
     <div class="dashboard-grid">
         <div class="stat-card">
@@ -282,13 +291,10 @@
                     <div class="stat-number">{{ $usersCount }}</div>
                     <div class="stat-label">Utilisateurs</div>
                     <span class="stat-change positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        </svg>
-                        +12%
+                        <i class="bi bi-people-fill"></i> Total
                     </span>
                 </div>
-                <div class="stat-icon users">👥</div>
+                <div class="stat-icon users"><i class="bi bi-people"></i></div>
             </div>
         </div>
 
@@ -298,13 +304,10 @@
                     <div class="stat-number">{{ $projectsCount }}</div>
                     <div class="stat-label">Projets</div>
                     <span class="stat-change positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        </svg>
-                        +8%
+                        <i class="bi bi-folder-fill"></i> Actifs
                     </span>
                 </div>
-                <div class="stat-icon projects">📁</div>
+                <div class="stat-icon projects"><i class="bi bi-folder"></i></div>
             </div>
         </div>
 
@@ -314,13 +317,10 @@
                     <div class="stat-number">{{ $categoriesCount }}</div>
                     <div class="stat-label">Catégories</div>
                     <span class="stat-change positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        </svg>
-                        +5%
+                        <i class="bi bi-tags-fill"></i> Total
                     </span>
                 </div>
-                <div class="stat-icon categories">📂</div>
+                <div class="stat-icon categories"><i class="bi bi-tags"></i></div>
             </div>
         </div>
 
@@ -330,13 +330,10 @@
                     <div class="stat-number">{{ $docsCount }}</div>
                     <div class="stat-label">Documents</div>
                     <span class="stat-change positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                        </svg>
-                        +18%
+                        <i class="bi bi-file-text-fill"></i> Publiés
                     </span>
                 </div>
-                <div class="stat-icon docs">📄</div>
+                <div class="stat-icon docs"><i class="bi bi-file-text"></i></div>
             </div>
         </div>
     </div>
@@ -345,45 +342,21 @@
     <div class="content-section">
         <div class="section-header">
             <h2 class="section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="9 11 12 14 22 4"></polyline>
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                Actions Rapides
+                <i class="bi bi-lightning-charge-fill"></i> Actions Rapides
             </h2>
         </div>
         <div class="quick-actions">
             <a href="{{ route('admin.users.index') }}" class="action-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="8.5" cy="7" r="4"></circle>
-                    <line x1="20" y1="8" x2="20" y2="14"></line>
-                    <line x1="23" y1="11" x2="17" y2="11"></line>
-                </svg>
-                Gérer Utilisateurs
+                <i class="bi bi-people fs-4"></i> Gérer Utilisateurs
             </a>
             <a href="{{ route('admin.projects.create') }}" class="action-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Nouveau Projet
+                <i class="bi bi-folder-plus fs-4"></i> Nouveau Projet
             </a>
             <a href="{{ route('admin.categories.create') }}" class="action-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="12" y1="8" x2="12" y2="16"></line>
-                    <line x1="8" y1="12" x2="16" y2="12"></line>
-                </svg>
-                Nouvelle Catégorie
+                <i class="bi bi-tag fs-4"></i> Nouvelle Catégorie
             </a>
             <a href="{{ route('admin.documentations.create') }}" class="action-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="12" y1="18" x2="12" y2="12"></line>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                </svg>
-                Nouveau Document
+                <i class="bi bi-file-earmark-plus fs-4"></i> Nouveau Document
             </a>
         </div>
     </div>
@@ -392,10 +365,7 @@
     <div class="content-section">
         <div class="section-header">
             <h2 class="section-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                </svg>
-                Activité Récente
+                <i class="bi bi-clock-history"></i> Activité Récente
             </h2>
         </div>
         <ul class="recent-activity">
@@ -417,7 +387,7 @@
                         <div class="activity-action">
                             {{ $activity['action'] }}
                             @if($activity['target'])
-                                <span class="activity-target">{{ $activity['target'] }}</span>
+                                <span class="activity-target">"{{ $activity['target'] }}"</span>
                             @endif
                         </div>
                         <div class="activity-time">{{ $activity['time'] }}</div>
@@ -427,10 +397,11 @@
                 <li class="activity-item">
                     <div class="activity-icon">ℹ️</div>
                     <div class="activity-content">
-                        <div class="activity-action">Aucune activité récente</div>
+                        <div class="activity-action">Aucune activité récente détectée.</div>
                     </div>
                 </li>
             @endforelse
         </ul>
     </div>
+</div>
 @endsection

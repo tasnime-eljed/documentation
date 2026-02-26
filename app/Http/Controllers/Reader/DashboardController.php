@@ -40,6 +40,7 @@ class DashboardController extends Controller
         // On charge 'favoritable' pour savoir si c'est un Projet ou une Doc
         $favoris = $user->favorites()
                         ->with('favoritable') // Eager Loading du polymorphisme
+                        //favoritable :permet de savoir quel type d’objet est favori
                         ->latest()
                         ->take(4)
                         ->get();

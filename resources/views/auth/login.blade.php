@@ -504,7 +504,7 @@
                         <input type="checkbox" name="remember">
                         <span>Se souvenir de moi</span>
                     </label>
-                    <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+                    <a href="{{ route('password.request') }}" class="forgot-link">Mot de passe oublié ?</a>
                 </div>
 
                 <button type="submit" class="btn-primary">

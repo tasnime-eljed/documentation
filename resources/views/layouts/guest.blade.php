@@ -11,14 +11,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    {{-- Icons Bootstrap (pour les pages internes) --}}
+    {{-- Icons Bootstrap --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
-    {{-- Bootstrap 5 CSS (Indispensable pour tes vues CRUD) --}}
+    {{-- Bootstrap 5 CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* Reset basique pour éviter les conflits */
+        /* Reset basique */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
@@ -42,7 +42,7 @@
             color: var(--text-dark);
             min-height: 100vh;
             overflow-x: hidden;
-            padding-top: 80px; /* Pour compenser la navbar fixed */
+            padding-top: 80px;
         }
 
         /* --- NAVBAR PERSONNALISÉE --- */
@@ -50,11 +50,11 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(74, 124, 78, 0.1);
-            position: fixed; /* Fixé en haut */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            z-index: 1030; /* Au-dessus de Bootstrap */
+            z-index: 1030;
             transition: all 0.3s ease;
             height: 80px;
             display: flex;
@@ -105,7 +105,7 @@
             list-style: none;
             gap: 12px;
             align-items: center;
-            margin-bottom: 0; /* Override Bootstrap ul margin */
+            margin-bottom: 0;
         }
 
         .custom-nav-link {
@@ -201,11 +201,96 @@
             border-radius: 3px;
         }
 
-        /* Override Bootstrap Container pour tes vues */
+        /* Content Wrapper */
         .content-wrapper {
             padding-top: 20px;
         }
 
+        /* =============================================================
+           STYLE DOCUMENTATION (Pour TinyMCE / Reader)
+           ============================================================= */
+        .documentation-content {
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        /* IMPORTANT : Rétablir les puces écrasées par le reset '*' */
+        .documentation-content ul {
+            list-style-type: disc !important;
+            padding-left: 2rem !important;
+            margin-bottom: 1rem;
+        }
+        .documentation-content ol {
+            list-style-type: decimal !important;
+            padding-left: 2rem !important;
+            margin-bottom: 1rem;
+        }
+        .documentation-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Titres dans le contenu */
+        .documentation-content h1,
+        .documentation-content h2,
+        .documentation-content h3,
+        .documentation-content h4 {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        /* Images */
+        .documentation-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin: 1.5rem auto;
+            display: block;
+        }
+
+        /* Tableaux */
+        .documentation-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        .documentation-content th,
+        .documentation-content td {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        .documentation-content th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+
+        /* Liens */
+        .documentation-content a {
+            color: var(--primary);
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        /* Citations */
+        .documentation-content blockquote {
+            border-left: 4px solid var(--primary-light);
+            padding-left: 1rem;
+            font-style: italic;
+            color: #4b5563;
+            margin: 1.5rem 0;
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Mobile Responsiveness */
         @media (max-width: 968px) {
             .navbar-container { padding: 0 20px; }
             .menu-toggle { display: flex; }
@@ -245,23 +330,16 @@
 
                 @guest
                     <li class="d-flex gap-2">
-                        <a href="{{ route('login') }}" class="btn-custom-login">
-                            Connexion
-                        </a>
-                        <a href="{{ route('register') }}" class="btn-custom-register">
-                            Inscription
-                        </a>
+                        <a href="{{ route('login') }}" class="btn-custom-login">Connexion</a>
+                        <a href="{{ route('register') }}" class="btn-custom-register">Inscription</a>
                     </li>
                 @else
-                    {{-- Lien Dashboard dynamique --}}
                     <li>
                         <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('reader.dashboard') }}"
                            class="custom-nav-link {{ request()->routeIs('*.dashboard') ? 'active' : '' }}">
                            <i class="bi bi-speedometer2"></i> Dashboard
                         </a>
                     </li>
-
-                    {{-- Profil et Déconnexion --}}
                     <li>
                         <div class="d-flex align-items-center gap-3">
                             <div class="user-profile-badge">
@@ -270,7 +348,6 @@
                                 </div>
                                 <span class="fw-bold d-none d-lg-block">{{ Auth::user()->nom }}</span>
                             </div>
-
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="btn btn-outline-danger btn-sm rounded-circle p-2" title="Déconnexion">
@@ -288,14 +365,13 @@
         </div>
     </nav>
 
-    {{-- Contenu Principal (Injecté par les autres vues) --}}
+    {{-- Contenu Principal --}}
     <main class="content-wrapper">
         @yield('content')
     </main>
 
     {{-- Scripts --}}
     <script>
-        // Toggle Mobile Menu
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.getElementById('navLinks');
         const navbar = document.getElementById('navbar');
@@ -306,7 +382,6 @@
             });
         }
 
-        // Scroll Effect
         window.addEventListener('scroll', () => {
             if (window.scrollY > 20) {
                 navbar.classList.add('scrolled');
@@ -316,9 +391,7 @@
         });
     </script>
 
-    {{-- Bootstrap Bundle JS (Pour les dropdowns et modals des pages internes) --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     @yield('scripts')
 </body>
 </html>

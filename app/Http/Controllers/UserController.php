@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -79,7 +80,7 @@ class UserController extends Controller
         $user = Auth::user();
         // Assure-toi d'avoir créé le fichier resources/views/users/profile.blade.php
         // Sinon, tu peux rediriger vers le dashboard ou créer cette vue.
-        return view('users.profile', compact('user'));
+        return view('reader.profile', compact('user'));
     }
 
     /**
@@ -92,12 +93,47 @@ class UserController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        /** @var \App\Models\User $user */
-        $user->update($validated);
+        // Gestion de l'upload de l'avatar
+        if ($request->hasFile('avatar')) {
+            // 1. Supprimer l'ancienne image si elle existe
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
-        return back()->with('success', 'Profil mis à jour avec succès');
+            // 2. Stocker la nouvelle image
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
+
+        $user->nom = $validated['nom'];
+        $user->email = $validated['email'];
+        $user->save();
+
+        return back()->with('success', 'Profil mis à jour avec succès.');
+    }
+
+
+    /**
+     * Supprimer la photo de profil
+     */
+    public function deleteAvatar()
+    {
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            // Supprimer le fichier physique
+            if (Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            // Supprimer la référence en base de données
+            $user->avatar = null;
+            $user->save();
+        }
+
+        return back()->with('success', 'Photo de profil supprimée.');
     }
 
     /**

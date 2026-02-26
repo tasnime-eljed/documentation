@@ -32,6 +32,32 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('logout');
 });
 
+
+
+// --- Mot de passe oublié ---
+// Afficher le formulaire de demande
+Route::get('/forgot-password', [App\Http\Controllers\ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->middleware('guest')
+    ->name('password.request');
+
+// Envoyer le lien par email
+Route::post('/forgot-password', [App\Http\Controllers\ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->middleware('guest')
+    ->name('password.email');
+
+// Afficher le formulaire de réinitialisation (après clic sur le lien email)
+Route::get('/reset-password/{token}', [App\Http\Controllers\ForgotPasswordController::class, 'showResetForm'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+// Traiter le changement de mot de passe
+Route::post('/reset-password', [App\Http\Controllers\ForgotPasswordController::class, 'reset'])
+    ->middleware('guest')
+    ->name('password.update');
+
+
+
+
 // Accès via lien partagé
 Route::get('/shared/{token}', [SharedLinkController::class, 'accederViaLienPartage'])
     ->name('shared.link');
@@ -73,7 +99,13 @@ Route::middleware(['auth', 'reader'])->prefix('reader')->name('reader.')->group(
         Route::post('/ajouter', 'ajouterAuxFavoris')->name('ajouter');
         Route::delete('/{docId}', 'retirerFavori')->name('retirer');
     });
+    // --- GESTION DU PROFIL ---
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile/avatar', [UserController::class, 'deleteAvatar'])->name('profile.avatar.delete'); // Pour supprimer la photo
+    Route::put('/password', [UserController::class, 'changePassword'])->name('password.update');
 });
+
 
 /*
 |--------------------------------------------------------------------------

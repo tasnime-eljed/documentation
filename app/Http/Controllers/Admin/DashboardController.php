@@ -92,6 +92,7 @@ class DashboardController extends Controller
         // Limiter à 8 activités
         $recentActivities = array_slice($recentActivities, 0, 8);//array_slice() : extraire une portion de tableau
         if (empty($recentActivities)) {
+            //empty() : vérifier si le tableau est vide
         // Si aucune activité, afficher message par défaut
             $recentActivities[] = [
                 'user' => 'Système',

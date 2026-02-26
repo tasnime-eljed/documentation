@@ -2,6 +2,70 @@
 
 @section('title', $documentation->titre)
 
+{{-- AJOUT : CSS Spécifique pour le rendu "Word" --}}
+@section('styles')
+<style>
+    .documentation-content {
+        font-family: 'Calibri', 'Segoe UI', sans-serif; /* Police standard Word */
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #212529;
+    }
+
+    /* Force l'affichage des puces (points) */
+    .documentation-content ul {
+        list-style-type: disc !important;
+        padding-left: 2.5rem !important;
+        margin-bottom: 1rem;
+    }
+
+    /* Force l'affichage des numéros (1. 2. 3.) */
+    .documentation-content ol {
+        list-style-type: decimal !important;
+        padding-left: 2.5rem !important;
+        margin-bottom: 1rem;
+    }
+
+    .documentation-content li {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Style des titres H1, H2, etc. générés par l'éditeur */
+    .documentation-content h1,
+    .documentation-content h2,
+    .documentation-content h3 {
+        color: #2C5F2D; /* Ta couleur verte primaire */
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+
+    /* Gestion des images */
+    .documentation-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin: 1.5rem 0;
+    }
+
+    /* Tableaux propres */
+    .documentation-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    .documentation-content td,
+    .documentation-content th {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+    }
+    .documentation-content th {
+        background-color: #f8f9fa;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container py-5">
 
@@ -10,7 +74,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <span class="badge bg-secondary">{{ $documentation->category->project->nom }}</span>
+                    <span class="badge bg-secondary">{{ $documentation->category->project->nom ?? 'Projet' }}</span>
                 </li>
                 <li class="breadcrumb-item">
                     <a href="{{ auth()->user()->isAdmin() ? route('admin.categories.show', $documentation->category_id) : route('reader.categories.show', $documentation->category_id) }}" class="text-decoration-none">
@@ -24,7 +88,7 @@
         <h1 class="display-5 fw-bold text-dark">{{ $documentation->titre }}</h1>
 
         <div class="text-muted d-flex gap-3 align-items-center mt-2 flex-wrap">
-            <span><i class="bi bi-person-circle"></i> Par {{ $documentation->user->nom }}</span>
+            <span><i class="bi bi-person-circle"></i> Par {{ $documentation->user->nom ?? 'Auteur' }}</span>
             <span><i class="bi bi-calendar"></i> {{ $documentation->created_at->format('d/m/Y') }}</span>
             <span><i class="bi bi-clock"></i> {{ $documentation->temps_lecture }} min de lecture</span>
             <span><i class="bi bi-eye"></i> {{ $documentation->vues }} vues</span>
@@ -36,28 +100,27 @@
         <div class="col-lg-8">
             <div class="card shadow-sm border-0 mb-5">
                 <div class="card-body p-4 p-lg-5">
+
+                    {{-- Zone d'affichage du contenu --}}
                     <div class="documentation-content lh-lg">
-                        {{-- Affichage propre du contenu (avec sauts de ligne) --}}
-                        {!! nl2br(e($documentation->contenu)) !!}
+                      {!! $documentation->contenu !!}
                     </div>
+
                 </div>
             </div>
         </div>
 
         {{-- 3. Barre Latérale (Actions) --}}
         <div class="col-lg-4">
-            {{-- Carte Actions --}}
             <div class="card shadow-sm border-0 mb-4">
                 <div class="card-header bg-white fw-bold">Actions</div>
                 <div class="card-body d-grid gap-2">
 
-                    {{-- Bouton Favoris (Pour tout le monde) --}}
-                    @if($isFavorite)
+                    {{-- Bouton Favoris --}}
+                    @if(isset($isFavorite) && $isFavorite)
                         <form action="{{ route('reader.favoris.retirer', $documentation->id) }}" method="POST">
                             @csrf
                             @method('DELETE')
-                            {{-- Pour le polymorphisme, on spécifie les champs cachés si nécessaire,
-                                 mais ici ta route "retirer" prend l'ID direct --}}
                             <input type="hidden" name="favoritable_id" value="{{ $documentation->id }}">
                             <input type="hidden" name="favoritable_type" value="Documentation">
                             <button class="btn btn-outline-danger w-100">
@@ -76,13 +139,12 @@
                     @endif
 
                     {{-- Actions Administrateur --}}
-                    @if(auth()->user()->isAdmin())
+                    @if(auth()->check() && auth()->user()->isAdmin())
                         <hr>
                         <a href="{{ route('admin.documentations.edit', $documentation->id) }}" class="btn btn-warning">
                             <i class="bi bi-pencil"></i> Modifier
                         </a>
 
-                        {{-- Générer Lien Partagé --}}
                         <form action="{{ route('admin.shared.generate', $documentation->id) }}" method="POST">
                             @csrf
                             <button class="btn btn-info text-white w-100">
@@ -101,8 +163,8 @@
                 </div>
             </div>
 
-            {{-- Carte Liens Partagés (Visible si Admin et s'il y a des liens) --}}
-            @if(auth()->user()->isAdmin() && $documentation->sharedLinks->count() > 0)
+            {{-- Liens Partagés --}}
+            @if(auth()->check() && auth()->user()->isAdmin() && $documentation->sharedLinks->count() > 0)
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-header bg-info text-white fw-bold">Liens de partage actifs</div>
                     <ul class="list-group list-group-flush">
@@ -120,7 +182,6 @@
                 </div>
             @endif
 
-            {{-- Bouton Retour --}}
             <div class="d-grid">
                 <a href="{{ auth()->user()->isAdmin() ? route('admin.documentations.index') : route('reader.documentations.index') }}" class="btn btn-secondary">
                     ↩ Retour à la liste

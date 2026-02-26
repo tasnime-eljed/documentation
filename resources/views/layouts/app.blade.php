@@ -261,6 +261,16 @@
                             <span>Dashboard</span>
                         </a>
                     </li>
+                     {{-- 2. AJOUTER CECI : Lien Profil --}}
+                    <li>
+                        <a href="{{ route('reader.profile') }}" class="{{ request()->routeIs('reader.profile') ? 'active' : '' }}">
+                            <svg class="sidebar-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Mon Profil</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="{{ route('reader.projects.index') }}" class="{{ request()->routeIs('reader.projects.*') ? 'active' : '' }}">
                             <svg class="sidebar-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -288,9 +298,19 @@
 
         <div class="navbar-actions">
             <div class="user-info">
-                <div class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->nom, 0, 1)) }}
-                </div>
+                <!-- Début modification Avatar -->
+    <div class="user-avatar" style="overflow: hidden; padding: 0;">
+        @if(Auth::user()->avatar)
+            {{-- Si l'utilisateur a une photo, on l'affiche --}}
+            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;">
+        @else
+            {{-- Sinon, on affiche l'initiale comme avant --}}
+            <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                {{ strtoupper(substr(Auth::user()->nom, 0, 1)) }}
+            </div>
+        @endif
+    </div>
+    <!-- Fin modification Avatar -->
                 <div>
                     <div class="user-name">{{ Auth::user()->nom }}</div>
                     <div class="user-role">{{ Auth::user()->isAdmin() ? 'Administrateur' : 'Lecteur' }}</div>

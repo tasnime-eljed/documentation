@@ -5,22 +5,17 @@
 @section('content')
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card shadow-sm">
                 <div class="card-header bg-warning text-dark py-3">
-                    <h2 class="h5 mb-0 fw-bold">
-                        ✏️ Modifier la documentation : {{ $documentation->titre }}
-                    </h2>
+                    <h2 class="h5 mb-0 fw-bold">✏️ Modifier : {{ $documentation->titre }}</h2>
                 </div>
 
                 <div class="card-body">
-                    {{-- Affichage des erreurs --}}
                     @if($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
                             </ul>
                         </div>
                     @endif
@@ -29,74 +24,52 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- Titre --}}
                         <div class="mb-3">
-                            <label for="titre" class="form-label fw-bold">Titre <span class="text-danger">*</span></label>
-
-                            {{-- CORRECTION : name="titre" et value avec old() --}}
-                            <input type="text"
-                                   name="titre"
-                                   id="titre"
-                                   class="form-control @error('titre') is-invalid @enderror"
-                                   value="{{ old('titre', $documentation->titre) }}"
-                                   required>
-
-                            @error('titre')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="titre" class="form-label fw-bold">Titre</label>
+                            <input type="text" name="titre" class="form-control" value="{{ old('titre', $documentation->titre) }}" required>
                         </div>
 
-                        {{-- Catégorie (Ajout indispensable) --}}
                         <div class="mb-3">
-                            <label for="category_id" class="form-label fw-bold">Catégorie <span class="text-danger">*</span></label>
-                            <select name="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
-                                <option value="">-- Sélectionner une catégorie --</option>
-                                {{--
-                                    $categories doit être envoyé par le contrôleur.
-                                    Si tu as une erreur, vérifie DocumentationController@edit
-                                --}}
+                            <label for="category_id" class="form-label fw-bold">Catégorie</label>
+                            <select name="category_id" class="form-select" required>
+                                <option value="">-- Sélectionner --</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ (old('category_id', $documentation->category_id) == $category->id) ? 'selected' : '' }}>
-                                        {{ $category->nom }} (Projet: {{ $category->project->nom ?? '?' }})
+                                    <option value="{{ $category->id }}" {{ (old('category_id', $documentation->category_id) == $category->id) ? 'selected' : '' }}>
+                                        {{ $category->nom }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('category_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
 
-                        {{-- Contenu --}}
                         <div class="mb-4">
-                            <label for="contenu" class="form-label fw-bold">Contenu <span class="text-danger">*</span></label>
-
-                            {{-- CORRECTION : name="contenu" --}}
-                            <textarea name="contenu"
-                                      id="contenu"
-                                      rows="10"
-                                      class="form-control @error('contenu') is-invalid @enderror"
-                                      required>{{ old('contenu', $documentation->contenu) }}</textarea>
-
-                            @error('contenu')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="contenu" class="form-label fw-bold">Contenu</label>
+                            <textarea name="contenu" id="contenu" class="form-control">{{ old('contenu', $documentation->contenu) }}</textarea>
                         </div>
 
-                        {{-- Boutons --}}
                         <div class="d-flex gap-2 justify-content-end">
-                            <a href="{{ route('admin.documentations.index') }}" class="btn btn-outline-secondary">
-                                Annuler
-                            </a>
-                            <button type="submit" class="btn btn-warning">
-                                Mettre à jour
-                            </button>
+                            <a href="{{ route('admin.documentations.index') }}" class="btn btn-outline-secondary">Annuler</a>
+                            <button type="submit" class="btn btn-warning">Mettre à jour</button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{{-- SCRIPT TINYMCE --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#contenu',
+        language: 'fr_FR',
+        height: 500,
+        menubar: true, // Menus activés pour ressembler à Word
+        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen table help wordcount',
+        toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+        branding: false,
+        // Style interne pour voir le résultat réel pendant l'édition
+        content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px; line-height:1.6; color:#333; }'
+    });
+</script>
 @endsection

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     /**
-     * Afficher le formulaire de connexion
+     * Afficher le formulaire de connexionc
      */
     public function showLoginForm()
     {
